@@ -1,4 +1,17 @@
 from flask import Flask, request
+from models.instituicaoensino import InstituicaoEnsino
+from helpers.file.json import read
+
+
+def listar():
+    # Ler o arquivo json.
+    dataset = read("instituicoes.json")
+    # Converter o json -> InsitituicaoEnsino.
+    instituicoesEnsino = [InstituicaoEnsino(
+        row["id"], row["no_entidade"], row["co_entidade"], row["qt_mat_bas"]) for row in dataset]
+    # Retorna a lista de InstituicoesEnsino.
+    return instituicoesEnsino
+
 
 app = Flask(__name__)
 
@@ -17,12 +30,19 @@ def health():
 
 @app.get("/instituicoesensino")
 def getAllInstituicoes():
-    insituicoesEnsino = [{"co_inep": "123456"}, {"co_inep": "654321"}]
-    coInep = request.args.get("co_inep")
-    if coInep is not None:
-        insituicoesEnsino = [
-            insituicaoEnsino for insituicaoEnsino in insituicoesEnsino if insituicaoEnsino["co_inep"] == coInep]
-    return insituicoesEnsino, 200
+    insituicoesEnsino = listar()
+    print("Entrou na requisição")
+    coEntidade = request.args.get("co_entidade")
+    print(f'Valor do co_entidade do request: {coEntidade}')
+    print(f'Itens da lista de instituições:{len(insituicoesEnsino)}')
+    if coEntidade is not None:
+        insituicoesEnsinoReponse = [
+            insituicaoEnsino.toDict() for insituicaoEnsino in insituicoesEnsino if insituicaoEnsino.co_entidade == coEntidade]
+    else:
+        insituicoesEnsinoReponse = [
+            insituicaoEnsino.toDict() for insituicaoEnsino in insituicoesEnsino]
+
+    return insituicoesEnsinoReponse, 200
 
 
 @app.get("/instituicoesensino/<int:id>")

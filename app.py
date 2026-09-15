@@ -47,12 +47,23 @@ def getAllInstituicoes():
 
 @app.get("/instituicoesensino/<int:id>")
 def getByIdInstituicoes(id):
-    return {"id": "1", "co_inep": "123456"}, 200
+    instituicoesensino = listar()
+    
+    instituicaoEncontrada = None
+
+    for item in instituicoesensino:
+     if int(item.id) == id:
+        instituicaoEncontrada = item
+        break 
+     
+
+    return instituicaoEncontrada.toDict(), 200
 
 
 @app.post("/instituicoesensino")
 def postInstituicoes():
     data = request.get_json()
+    instituicoesensino = listar()
     coInep = data.get("co_inep")
     return {"id": 1, "co_inep": coInep}, 201
 
@@ -63,9 +74,9 @@ def putInstituicoes():
 
 
 @app.delete("/instituicoesensino/<int:id>")
-def deleteInstituicoes():
-    pass
-
+def deleteInstituicoes(id):
+      instituicoesensino = listar()
+       
 
 def main(arg=[]):
     app.run(debug=True)

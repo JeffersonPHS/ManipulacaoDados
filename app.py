@@ -48,15 +48,11 @@ def getAllInstituicoes():
 @app.get("/instituicoesensino/<int:id>")
 def getByIdInstituicoes(id):
     instituicoesensino = listar()
-    
-    instituicaoEncontrada = None
 
     for item in instituicoesensino:
      if int(item.id) == id:
         instituicaoEncontrada = item
         break 
-     
-
     return instituicaoEncontrada.toDict(), 200
 
 
@@ -64,19 +60,52 @@ def getByIdInstituicoes(id):
 def postInstituicoes():
     data = request.get_json()
     instituicoesensino = listar()
-    coInep = data.get("co_inep")
-    return {"id": 1, "co_inep": coInep}, 201
+
+
+    nova_instituicao = InstituicaoEnsino(
+        id=31,
+        no_entidade=data.get("no_entidade"),
+        co_entidade=data.get("co_entidade"),
+        qt_mat_bas=data.get("qt_mat_bas")
+    )
+    
+    instituicoesensino.append(nova_instituicao)
+    return nova_instituicao.toDict(), 200
 
 
 @app.put("/instituicoesensino/<int:id>")
-def putInstituicoes():
-    pass
+def putInstituicoes(id):
+    data = request.get_json()
+
+    instituicoesensino = listar()
+
+   
+    for item in instituicoesensino:
+     if int(item.id) == id:
+        
+            
+      item.no_entidade=data.get("no_entidade"),
+      item.co_entidade=data.get("co_entidade"),
+      item.qt_mat_bas=data.get("qt_mat_bas")
+     
+      break 
+    return item.toDict(), 200
+
+
 
 
 @app.delete("/instituicoesensino/<int:id>")
 def deleteInstituicoes(id):
       instituicoesensino = listar()
-       
+      for item in  instituicoesensino:
+         if int(item.id) == id:
+              Encontrei = item
+              break
+
+      instituicoesensino.remove(Encontrei)
+      return {"foi deletado": "teste"}
+
+
 
 def main(arg=[]):
     app.run(debug=True)
